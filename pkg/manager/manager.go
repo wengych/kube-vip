@@ -141,7 +141,7 @@ func New(configMap string, config *kubevip.Config) (*Manager, error) {
 		if err != nil {
 			return nil, fmt.Errorf("could not create k8s REST config from incluster file: %q: %w", homeConfigPath, err)
 		}
-		clientset, err = k8s.NewClientset(clientConfig)
+		clientset, err = k8s.NewClientset(clientConfig);
 		if err != nil {
 			return nil, fmt.Errorf("could not create k8s clientset from incluster config: %w", err)
 		}
@@ -162,19 +162,19 @@ func New(configMap string, config *kubevip.Config) (*Manager, error) {
 
 	// Flip this to something else
 	// if config.DetectControlPlane {
-	// 	log.Info("[k8s client] flipping to internal service account")
-	// 	_, err = clientset.CoreV1().ServiceAccounts("kube-system").Apply(context.TODO(), kubevip.GenerateSA(), v1.ApplyOptions{FieldManager: "application/apply-patch"})
-	// 	if err != nil {
-	// 		return nil, fmt.Errorf("could not create k8s clientset from incluster config: %v", err)
-	// 	}
-	// 	_, err = clientset.RbacV1().ClusterRoles().Apply(context.TODO(), kubevip.GenerateCR(), v1.ApplyOptions{FieldManager: "application/apply-patch"})
-	// 	if err != nil {
-	// 		return nil, fmt.Errorf("could not create k8s clientset from incluster config: %v", err)
-	// 	}
-	// 	_, err = clientset.RbacV1().ClusterRoleBindings().Apply(context.TODO(), kubevip.GenerateCRB(), v1.ApplyOptions{FieldManager: "application/apply-patch"})
-	// 	if err != nil {
-	// 		return nil, fmt.Errorf("could not create k8s clientset from incluster config: %v", err)
-	// 	}
+	//  log.Info("[k8s client] flipping to internal service account")
+	//  _, err = clientset.CoreV1().ServiceAccounts("kube-system").Apply(context.TODO(), kubevip.GenerateSA(), v1.ApplyOptions{FieldManager: "application/apply-patch"})
+	//  if err != nil {
+	//      return nil, fmt.Errorf("could not create k8s clientset from incluster config: %v", err)
+	//  }
+	//  _, err = clientset.RbacV1().ClusterRoles().Apply(context.TODO(), kubevip.GenerateCR(), v1.ApplyOptions{FieldManager: "application/apply-patch"})
+	//  if err != nil {
+	//      return nil, fmt.Errorf("could not create k8s clientset from incluster config: %v", err)
+	//  }
+	//  _, err = clientset.RbacV1().ClusterRoleBindings().Apply(context.TODO(), kubevip.GenerateCRB(), v1.ApplyOptions{FieldManager: "application/apply-patch"})
+	//  if err != nil {
+	//      return nil, fmt.Errorf("could not create k8s clientset from incluster config: %v", err)
+	//  }
 	// }
 
 	// listen for interrupts or the Linux SIGTERM signal and cancel
@@ -304,10 +304,10 @@ func (sm *Manager) Start() error {
 					}
 					log.Info("Found UPNP IGD2 Gateway address", "ip", ip)
 				}
+				// Only start the refresh goroutine when UPnP is enabled and IGD clients found
+				go sm.svcProcessor.RefreshUPNPForwards()
 			}
 		}
-		// TODO: It would be nice to run the UPNP refresh only on the leader.
-		go sm.svcProcessor.RefreshUPNPForwards()
 	}
 
 	// If ARP is enabled then we start a LeaderElection that will use ARP to advertise VIPs
